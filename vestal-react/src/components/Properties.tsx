@@ -3,16 +3,17 @@ import { BsXCircleFill, BsFillCheckCircleFill } from "react-icons/bs";
 
 interface Props {
   properties: Property[];
+  numOfDays: number;
 }
 
-const Properties = ({ properties }: Props) => {
+const Properties = ({ properties, numOfDays }: Props) => {
   return (
     <>
       <div
         className="container-fluid text-center"
-        style={{ marginBlock: "3%" }}
+        style={{ marginBlock: "3%", paddingRight: "3%", paddingLeft: "3%" }}
       >
-        <div className="row row-cols-1 row-cols-md-3 g-4">
+        <div className="row row-cols-1 row-cols-md-4 g-4">
           {properties.map((property) => (
             <div className="col" key={property.id}>
               <div
@@ -30,6 +31,7 @@ const Properties = ({ properties }: Props) => {
                     borderColor: "black",
                     borderRadius: "2%",
                     borderWidth: "2px",
+                    aspectRatio: "4/3",
                   }}
                   src={property.image}
                   className="card-img-top"
@@ -41,11 +43,15 @@ const Properties = ({ properties }: Props) => {
                     Location: {property.city}, {property.country}
                   </p>
                   <p className="card-text">Info: {property.information}</p>
-                  <p className="card-text">Price: ${property.price}</p>
+                  {numOfDays !== 0 && (
+                    <p className="card-text">
+                      Price: ${property.price * numOfDays} ({numOfDays} days)
+                    </p>
+                  )}
                   {property.availability && (
                     <h5 className="card-text">
                       <div className="alert alert-success" role="alert">
-                        Available
+                        Availability:
                         <BsFillCheckCircleFill
                           size="25"
                           style={{ marginLeft: "2%" }}
@@ -56,7 +62,7 @@ const Properties = ({ properties }: Props) => {
                   {!property.availability && (
                     <h5 className="card-text">
                       <div className="alert alert-danger" role="alert">
-                        Not available
+                        Availability:
                         <BsXCircleFill size="25" style={{ marginLeft: "2%" }} />
                       </div>
                     </h5>

@@ -2,7 +2,11 @@ import { useRef, useState } from "react";
 import Swal from "sweetalert2";
 import Query from "../model/Query";
 
-const Search = () => {
+interface Props {
+  calculateNumOfDays: (dateStart: string, dateEnd: string) => void;
+}
+
+const Search = ({ calculateNumOfDays }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState<Query>({
     location: "",
@@ -59,6 +63,7 @@ const Search = () => {
             showConfirmButton: false,
             timer: 2000,
           });
+          calculateNumOfDays(query.dateStart, query.dateEnd);
         } else {
           Swal.fire({
             title: "Error",
