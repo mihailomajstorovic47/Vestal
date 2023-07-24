@@ -2,12 +2,12 @@
 
 namespace Vestal.Core.API.Model
 {
-    public class PropertyDbContext : DbContext
+    public class MyDbContext : DbContext
     {
-        public PropertyDbContext(DbContextOptions<PropertyDbContext> options)  : base(options)
+        public MyDbContext(DbContextOptions<MyDbContext> options)  : base(options)
         {
         }
-
+        public DbSet<Location> Location { get; set; }
         public DbSet<Property> Property { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

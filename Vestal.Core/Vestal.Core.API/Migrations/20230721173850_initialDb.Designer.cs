@@ -10,8 +10,8 @@ using Vestal.Core.API.Model;
 
 namespace Vestal.Core.API.Migrations
 {
-    [DbContext(typeof(PropertyDbContext))]
-    [Migration("20230721144534_initialDb")]
+    [DbContext(typeof(MyDbContext))]
+    [Migration("20230721173850_initialDb")]
     partial class initialDb
     {
         /// <inheritdoc />

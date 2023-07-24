@@ -1,18 +1,53 @@
-import { useRef, useState } from "react";
+import axios from "axios";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Swal from "sweetalert2";
 import Query from "../model/Query";
 
 interface Props {
   calculateNumOfDays: (dateStart: string, dateEnd: string) => void;
+  updateProperties: (properties: any) => void;
 }
 
-const Search = ({ calculateNumOfDays }: Props) => {
+const Search = ({ calculateNumOfDays, updateProperties }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [cities, setCities] = useState<string[]>([]);
+  const [countries, setCountries] = useState<string[]>([]);
+
   const [query, setQuery] = useState<Query>({
+    locationType: "",
     location: "",
     dateStart: "",
     dateEnd: "",
   });
+
+  useEffect(() => {
+    getCities();
+    getCountries();
+  }, []);
+
+  function getCountries() {
+    axios
+      .get("http://localhost:5219/countries")
+      .then((response) => {
+        setCountries(response.data);
+        setSuggestions(response.data);
+      })
+      .catch(function (error) {
+        console.log(error.response.data);
+      });
+  }
+
+  function getCities() {
+    axios
+      .get("http://localhost:5219/cities")
+      .then((response) => {
+        setCities(response.data);
+      })
+      .catch(function (error) {
+        console.log(error.response.data);
+      });
+  }
 
   function areDatesSelected(): boolean {
     return query.dateStart !== "" && query.dateEnd !== "";
@@ -46,31 +81,53 @@ const Search = ({ calculateNumOfDays }: Props) => {
     return new Date(query.dateStart) < new Date(query.dateEnd);
   }
 
-  const handleChange = () => {
-    setQuery({ ...query, location: "" });
+  function searchProperties() {
+    axios
+      .get("http://localhost:5219/search", { params: query })
+      .then((response) => {
+        console.log(response.data);
+        updateProperties(response.data);
+        calculateNumOfDays(query.dateStart, query.dateEnd);
+      })
+      .catch(function (error) {
+        console.log(error.response.data);
+      });
+  }
+
+  const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    console.log(suggestions);
+    setQuery({
+      ...query,
+      locationType: event.target.value,
+      location: "",
+    });
+    if (event.target.value === "city") {
+      setSuggestions(cities);
+      console.log(cities);
+    } else if (event.target.value === "country") {
+      setSuggestions(countries);
+      console.log(countries);
+    }
     inputRef.current?.removeAttribute("disabled");
     inputRef.current?.focus();
+  };
+
+  const onInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setQuery({ ...query, location: event.target.value });
   };
 
   const search = () => {
     if (isLocationSelected()) {
       if (areDatesSelected()) {
         if (validateDates()) {
-          Swal.fire({
-            title: "Great",
-            text: "All good !",
-            icon: "success",
-            showConfirmButton: false,
-            timer: 2000,
-          });
-          calculateNumOfDays(query.dateStart, query.dateEnd);
+          searchProperties();
         } else {
           Swal.fire({
             title: "Error",
             text: "Please, pick valid dates. Start date must be before end date.",
             icon: "error",
             showConfirmButton: false,
-            timer: 2000,
+            timer: 3000,
           });
         }
       } else {
@@ -96,25 +153,23 @@ const Search = ({ calculateNumOfDays }: Props) => {
 
   return (
     <>
-      <div className="container-fluid text-center" style={{ marginTop: "2%" }}>
+      <div className="container-fluid text-left" style={{ marginTop: "1%" }}>
         <div className="row">
-          <div className="col-sm-3 mb-2">
+          <div className="col-md-3 mb-2" style={{ position: "relative" }}>
             <select
               id="combobox"
-              className="form-select bg-secondary text-light"
+              className="form-select bg-primary text-light"
               onChange={handleChange}
             >
               <option selected disabled>
                 Search by...
               </option>
               <option value="city">City</option>
-              <option value="county">Country</option>
+              <option value="country">Country</option>
             </select>
             <input
               value={query.location}
-              onChange={(event) => {
-                setQuery({ ...query, location: event.target.value });
-              }}
+              onChange={onInputChange}
               ref={inputRef}
               id="location"
               type="text"
@@ -122,9 +177,38 @@ const Search = ({ calculateNumOfDays }: Props) => {
               className="form-control"
               placeholder="Enter search text..."
             />
+            <ul
+              className="list-group"
+              style={{ position: "absolute", zIndex: "1", width: "95%" }}
+            >
+              {query.location !== "" &&
+                suggestions
+                  .filter((item) => {
+                    return (
+                      item
+                        .trim()
+                        .toLowerCase()
+                        .startsWith(query.location.trim().toLowerCase()) &&
+                      query.location !== item
+                    );
+                  })
+                  .slice(0, 10)
+                  .map((suggestion) => (
+                    <li
+                      key={suggestion}
+                      className="list-group-item list-group-item-action list-group-item-light"
+                      onClick={() => {
+                        setQuery({ ...query, location: suggestion });
+                        inputRef.current!.value = suggestion;
+                      }}
+                    >
+                      {suggestion}
+                    </li>
+                  ))}
+            </ul>
           </div>
-          <div className="col-sm-3 mb-2">
-            <span className="input-group-text bg-secondary text-light">
+          <div className="col-md-3 mb-2">
+            <span className="input-group-text bg-primary text-light">
               Start Date
             </span>
             <input
@@ -138,8 +222,8 @@ const Search = ({ calculateNumOfDays }: Props) => {
               }}
             />
           </div>
-          <div className="col-sm-3 mb-2">
-            <span className="input-group-text bg-secondary text-light">
+          <div className="col-md-3 mb-2">
+            <span className="input-group-text bg-primary text-light">
               End Date
             </span>
             <input
@@ -153,11 +237,11 @@ const Search = ({ calculateNumOfDays }: Props) => {
               }}
             />
           </div>
-          <div className="col-sm-3 my-auto">
+          <div className="col-md-3 my-auto text-center">
             <button
               type="button"
               onClick={search}
-              className="btn btn-lg btn-outline-secondary"
+              className="btn btn-lg btn-outline-primary"
             >
               Search
             </button>

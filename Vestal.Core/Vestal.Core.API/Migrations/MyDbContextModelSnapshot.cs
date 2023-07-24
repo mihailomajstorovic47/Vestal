@@ -9,8 +9,8 @@ using Vestal.Core.API.Model;
 
 namespace Vestal.Core.API.Migrations
 {
-    [DbContext(typeof(PropertyDbContext))]
-    partial class PropertyDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(MyDbContext))]
+    partial class MyDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
