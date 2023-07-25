@@ -1,32 +1,26 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Vestal.Core.API.DTO;
+﻿using Vestal.Core.API.DTO;
 using Vestal.Core.API.Model;
 
 namespace Vestal.Core.API.Services
 {
-    public class PropertyService
+    public static class PropertyService
     {
-        Random random;
-        public PropertyService() {
-            random = new Random();
-        }
+        private static Random random = new Random();
 
-        public List<PropertyDTO> convertProperties(List<Property> props) 
+        public static List<PropertyDTO> convertProperties(List<Property> props) 
         {
             List <PropertyDTO> properties = new List<PropertyDTO> ();
             props.ForEach(p =>
             {
-                properties.Add(new PropertyDTO
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Price = p.Price,
-                    City = p.Location.City,
-                    Country = p.Location.Country,
-                    Information = p.Information,
-                    Image = p.Image,
-                    Availability = random.Next(2) == 1
-                });
+                properties.Add(new PropertyDTO(
+                    p.Id,
+                    p.Name,
+                    p.Location.City,
+                    p.Location.Country,
+                    p.Price,
+                    random.Next(2) == 1,
+                    p.Information,
+                    p.Image));
             });
             return properties;
         }

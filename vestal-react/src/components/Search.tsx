@@ -85,7 +85,6 @@ const Search = ({ calculateNumOfDays, updateProperties }: Props) => {
     axios
       .get("http://localhost:5219/search", { params: query })
       .then((response) => {
-        console.log(response.data);
         updateProperties(response.data);
         calculateNumOfDays(query.dateStart, query.dateEnd);
       })
@@ -95,7 +94,6 @@ const Search = ({ calculateNumOfDays, updateProperties }: Props) => {
   }
 
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    console.log(suggestions);
     setQuery({
       ...query,
       locationType: event.target.value,
@@ -103,10 +101,8 @@ const Search = ({ calculateNumOfDays, updateProperties }: Props) => {
     });
     if (event.target.value === "city") {
       setSuggestions(cities);
-      console.log(cities);
     } else if (event.target.value === "country") {
       setSuggestions(countries);
-      console.log(countries);
     }
     inputRef.current?.removeAttribute("disabled");
     inputRef.current?.focus();
@@ -148,7 +144,6 @@ const Search = ({ calculateNumOfDays, updateProperties }: Props) => {
         timer: 2000,
       });
     }
-    console.log(query);
   };
 
   return (

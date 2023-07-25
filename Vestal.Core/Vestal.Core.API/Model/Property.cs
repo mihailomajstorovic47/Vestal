@@ -8,5 +8,16 @@
         public int Price { get; set; }
         public string Information { get; set; }
         public string Image { get; set; }
+
+        public Property(int id, string name, Location location, int price, string information, string image)
+        {
+            Id = id;
+            Name = name;
+            Location = location;
+            Price = price;
+            Information = information;
+            Image = image;
+        }
+
     }
 }

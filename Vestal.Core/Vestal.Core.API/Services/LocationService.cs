@@ -1,13 +1,10 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using Vestal.Core.API.Model;
+﻿using Vestal.Core.API.Model;
 
 namespace Vestal.Core.API.Services
 {
-    public class LocationService
+    public static class LocationService
     {
-        public LocationService() { }
-
-        public List<string> convertCities(List<Location> locations) 
+        public static List<string> convertCities(List<Location> locations) 
         {
             List<string> cities = new List<string>();
             locations.ForEach(location =>
@@ -17,7 +14,7 @@ namespace Vestal.Core.API.Services
             return cities.Distinct().ToList();
         }
 
-        public List<string> convertCountries(List<Location> locations)
+        public static List<string> convertCountries(List<Location> locations)
         {
             List<string> countries = new List<string>();
             locations.ForEach(location =>

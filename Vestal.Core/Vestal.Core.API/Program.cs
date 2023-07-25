@@ -42,39 +42,29 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-app.MapGet("/", (Func<string>)(() => "Hello World!"));
-
-app.MapGet("/test", ([FromServices] MyDbContext db) =>
-{
-        return Results.Ok(db.Property.Include(p => p.Location).ToList());
-});
-
 app.MapGet("/cities", ([FromServices] MyDbContext db) =>
 {
-    LocationService service = new LocationService();
 
-    return Results.Ok(service.convertCities(db.Location.ToList()));
+    return Results.Ok(LocationService.convertCities(db.Location.ToList()));
 });
 
 app.MapGet("/countries", ([FromServices] MyDbContext db) =>
 {
-    LocationService service = new LocationService();
 
-    return Results.Ok(service.convertCountries(db.Location.ToList()));
+    return Results.Ok(LocationService.convertCountries(db.Location.ToList()));
 });
 
 app.MapGet("/suggestions", (string locationType, string location, [FromServices] MyDbContext db) =>
 {
-    PropertyService service = new PropertyService();
     string queryLocation = location.Trim().ToLower();
 
     if (locationType == "city")
         {
-            return Results.Ok(service.convertProperties(db.Property.Include(p => p.Location).Where(p => p.Location.City.ToLower() == queryLocation).ToList()));
+            return Results.Ok(PropertyService.convertProperties(db.Property.Include(p => p.Location).Where(p => p.Location.City.ToLower() == queryLocation).ToList()));
         }
         else if (locationType == "country")
         {
-            return Results.Ok(service.convertProperties(db.Property.Include(p => p.Location).Where(p => p.Location.Country.ToLower() == queryLocation).ToList()));
+            return Results.Ok(PropertyService.convertProperties(db.Property.Include(p => p.Location).Where(p => p.Location.Country.ToLower() == queryLocation).ToList()));
         }
     return Results.BadRequest();
 });
@@ -85,28 +75,17 @@ app.MapGet("/search", (string locationType,
                        string dateEnd,
                        [FromServices] MyDbContext db) =>
 {
-    PropertyService service = new PropertyService();
     string queryLocation = location.Trim().ToLower();
-    Boolean IsDateOk = false;
 
-    try
-    {
-        IsDateOk = DateOnly.Parse(dateStart) < DateOnly.Parse(dateEnd);
-    }
-    catch (Exception e)
-    {
-        return Results.BadRequest();
-    }
-
-    if (IsDateOk)
+    if (DateService.isDateRangeValid(dateStart, dateEnd))
     {
         if (locationType == "city")
         {
-            return Results.Ok(service.convertProperties(db.Property.Include(p => p.Location).Where(p => p.Location.City.ToLower() == queryLocation).ToList()));
+            return Results.Ok(PropertyService.convertProperties(db.Property.Include(p => p.Location).Where(p => p.Location.City.ToLower() == queryLocation).ToList()));
         }
         else if (locationType == "country")
         {
-            return Results.Ok(service.convertProperties(db.Property.Include(p => p.Location).Where(p => p.Location.Country.ToLower() == queryLocation).ToList()));
+            return Results.Ok(PropertyService.convertProperties(db.Property.Include(p => p.Location).Where(p => p.Location.Country.ToLower() == queryLocation).ToList()));
         }
     }
     return Results.BadRequest();
