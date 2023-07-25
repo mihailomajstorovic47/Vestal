@@ -88,7 +88,7 @@ const Properties = ({ properties, numOfDays }: Props) => {
                     </div>
                   </div>
                   <hr />
-                  <div className="row" style={{ aspectRatio: "17/10" }}>
+                  <div className="row" style={{ aspectRatio: "3.1/2" }}>
                     <p className="card-text">
                       <MdInfo size="35" style={{ marginBottom: "1%" }} />
                       <br />

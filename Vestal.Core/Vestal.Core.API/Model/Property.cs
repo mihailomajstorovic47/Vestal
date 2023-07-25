@@ -9,6 +9,8 @@
         public string Information { get; set; }
         public string Image { get; set; }
 
+        public Property() {}
+
         public Property(int id, string name, Location location, int price, string information, string image)
         {
             Id = id;
